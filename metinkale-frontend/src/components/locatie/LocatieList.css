@@ -1,0 +1,73 @@
+.locatie-list-container {
+  width: 100%;
+}
+
+.locatie-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.2rem;
+}
+
+.locatie-item {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  padding: 1.2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-left: 4px solid #007bff;
+  min-height: 220px;
+  justify-content: space-between;
+  background: #fff;
+}
+
+.locatie-list-grid.theme-dark {
+  background: #222 !important;
+  color: #f6f8fa;
+}
+.locatie-list-grid.theme-light {
+  background: #fff !important;
+  color: #222;
+}
+
+.locatie-item.theme-dark {
+  background: #222 !important;
+  color: #f6f8fa;
+}
+.locatie-item.theme-light {
+  background: #fff !important;
+  color: #222;
+}
+
+.locatie-card .card-body {
+  min-height: 120px;
+}
+
+.locatie-card {
+  width: 100%;
+}
+
+.locatie-card .card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+@media (max-width: 992px) {
+  .locatie-list-grid {
+    gap: 1.5rem;
+  }
+  .locatie-item {
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 600px) {
+  .locatie-list-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  .locatie-item {
+    min-height: 120px;
+  }
+}

@@ -1,0 +1,73 @@
+.verhuur-list-container {
+  width: 100%;
+}
+
+.verhuur-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.2rem;
+}
+
+.verhuur-item {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  padding: 1.2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-left: 4px solid #007bff;
+  min-height: 220px;
+  justify-content: space-between;
+  background: #fff;
+}
+
+.verhuur-list-grid.theme-dark {
+  background: #222 !important;
+  color: #f6f8fa;
+}
+.verhuur-list-grid.theme-light {
+  background: #fff !important;
+  color: #222;
+}
+
+.verhuur-item.theme-dark {
+  background: #222 !important;
+  color: #f6f8fa;
+}
+.verhuur-item.theme-light {
+  background: #fff !important;
+  color: #222;
+}
+
+.verhuur-card .card-body {
+  min-height: 120px;
+}
+
+.verhuur-card {
+  width: 100%;
+}
+
+.verhuur-card .card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+@media (max-width: 992px) {
+  .verhuur-list-grid {
+    gap: 1.5rem;
+  }
+  .verhuur-item {
+    min-height: 180px;
+  }
+}
+
+@media (max-width: 600px) {
+  .verhuur-list-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  .verhuur-item {
+    min-height: 120px;
+  }
+}

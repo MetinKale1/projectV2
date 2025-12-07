@@ -1,0 +1,94 @@
+.addlocatie-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px;
+  padding: 32px;
+  min-height: 100vh;
+  text-align: center;
+  background: transparent;
+}
+
+.addlocatie-title {
+  color: #1a4d8f;
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.addlocatie-form {
+  max-width: 400px;
+  margin: 0 auto;
+  background: transparent;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: none;
+}
+
+.addlocatie-form label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.addlocatie-form input,
+.addlocatie-form select,
+.addlocatie-form textarea {
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.addlocatie-form input:focus,
+.addlocatie-form select:focus {
+  border-color: #1a4d8f;
+}
+
+.addlocatie-form button {
+  width: 100%;
+  background: linear-gradient(90deg, #1a4d8f 0%, #3b82f6 100%);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(26,77,143,0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.addlocatie-form button:hover {
+  background: linear-gradient(90deg, #3b82f6 0%, #1a4d8f 100%);
+  box-shadow: 0 4px 16px rgba(26,77,143,0.12);
+}
+
+@media (max-width: 600px) {
+  .addlocatie-container {
+    padding: 12px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+.theme-dark .addlocatie-container,
+.theme-dark .addlocatie-title,
+.theme-dark .addlocatie-form,
+.theme-dark .addlocatie-form input,
+.theme-dark .addlocatie-form textarea {
+  color: #f6f8fa !important;
+  background: transparent !important;
+}
+
+.theme-light .addlocatie-container,
+.theme-light .addlocatie-title,
+.theme-light .addlocatie-form,
+.theme-light .addlocatie-form input,
+.theme-light .addlocatie-form textarea {
+  color: #222 !important;
+  background: transparent !important;
+}

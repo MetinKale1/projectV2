@@ -1,0 +1,103 @@
+/* Modern en consistente styling voor AddFiets */
+.addfiets-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.addfiets-title {
+  color: #1a4d8f;
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.addfiets-form {
+  max-width: 400px;
+  margin: 0 auto;
+  background: transparent;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: none;
+}
+
+.addfiets-form label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.addfiets-form input,
+.addfiets-form select,
+.addfiets-form textarea {
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.addfiets-form input:focus,
+.addfiets-form select:focus {
+  border-color: #1a4d8f;
+}
+
+.addfiets-form button {
+  width: 100%;
+  background: linear-gradient(90deg, #1a4d8f 0%, #3b82f6 100%);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(26,77,143,0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-top: 8px;
+}
+.addfiets-form button:hover {
+  background: linear-gradient(90deg, #3b82f6 0%, #1a4d8f 100%);
+  box-shadow: 0 4px 16px rgba(26,77,143,0.12);
+}
+
+/* Theming for light and dark mode */
+.theme-dark .addfiets-container,
+.theme-dark .addfiets-title,
+.theme-dark .addfiets-form,
+.theme-dark .addfiets-form input,
+.theme-dark .addfiets-form textarea {
+  color: #f6f8fa !important;
+  background: transparent !important;
+}
+.theme-light .addfiets-container,
+.theme-light .addfiets-title,
+.theme-light .addfiets-form,
+.theme-light .addfiets-form input,
+.theme-light .addfiets-form textarea {
+  color: #222 !important;
+  background: transparent !important;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .add-fiets-container {
+    padding: 1.5rem;
+  }
+
+  .add-fiets-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .add-fiets-container input,
+  .add-fiets-container select,
+  .add-fiets-container button {
+    font-size: 1rem;
+  }
+}

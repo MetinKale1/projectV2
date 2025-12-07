@@ -1,0 +1,68 @@
+.huurfiets-container.theme-dark {
+  background: #222 !important;
+  color: #f6f8fa !important;
+}
+.huurfiets-container.theme-light {
+  background: #fff !important;
+  color: #222 !important;
+}
+.huurfiets-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px;
+}
+
+.huurfiets-title {
+  color: #1a4d8f;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.huurfiets-form label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.huurfiets-form input,
+.huurfiets-form select {
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.huurfiets-form input:focus,
+.huurfiets-form select:focus {
+  border-color: #1a4d8f;
+}
+
+.huurfiets-form button {
+  background: linear-gradient(90deg, #1a4d8f 0%, #3b82f6 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(26,77,143,0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.huurfiets-form button:hover {
+  background: linear-gradient(90deg, #3b82f6 0%, #1a4d8f 100%);
+  box-shadow: 0 4px 16px rgba(26,77,143,0.12);
+}
+
+@media (max-width: 600px) {
+  .huurfiets-container {
+    padding: 12px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

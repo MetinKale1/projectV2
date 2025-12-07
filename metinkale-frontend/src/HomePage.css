@@ -1,0 +1,57 @@
+.homepage-container {
+  max-width: 900px;
+  margin: 40px auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px;
+  text-align: center;
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+.homepage-container.theme-light {
+  background: #f6f8fa !important;
+  color: #222 !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
+}
+.homepage-container.theme-dark {
+  background: #222 !important;
+  color: #f6f8fa !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.32);
+  border: 1px solid #333;
+}
+
+.homepage-title {
+  color: #1a4d8f;
+  margin-bottom: 24px;
+}
+
+.homepage-welcome {
+  font-size: 1.2rem;
+  margin-bottom: 32px;
+}
+
+.homepage-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 600px;
+}
+.homepage-list li {
+  background: inherit;
+  color: inherit;
+  margin-bottom: 12px;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+/* Optioneel: maak de buitenste grid ook zwart in dark mode */
+body.theme-dark {
+  background: #111;
+  color: #f6f8fa;
+}
+body.theme-light {
+  background: #f6f8fa;
+  color: #222;
+}

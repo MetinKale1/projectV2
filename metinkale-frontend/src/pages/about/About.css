@@ -1,0 +1,43 @@
+.about-container {
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 32px;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.about-title {
+  font-size: 2rem;
+  margin-bottom: 24px;
+  color: #1a4d8f;
+}
+
+.about-content {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #222;
+}
+
+.about-text {
+  font-size: 1.1rem;
+  margin-bottom: 32px;
+  color: inherit;
+}
+
+@media (max-width: 600px) {
+  .about-container {
+    padding: 12px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+.theme-dark .about-container, .theme-dark .about-title, .theme-dark .about-text, .theme-dark .about-content {
+  color: #f6f8fa !important;
+}
+.theme-light .about-container, .theme-light .about-title, .theme-light .about-text, .theme-light .about-content {
+  color: #222 !important;
+}

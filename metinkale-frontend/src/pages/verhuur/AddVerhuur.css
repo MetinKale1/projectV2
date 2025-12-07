@@ -1,0 +1,91 @@
+.addverhuur-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: transparent;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.addverhuur-title {
+  color: #1a4d8f;
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.addverhuur-form {
+  max-width: 400px;
+  margin: 0 auto;
+  background: transparent;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: none;
+}
+
+.addverhuur-form label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.addverhuur-form input,
+.addverhuur-form select,
+.addverhuur-form textarea {
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.addverhuur-form input:focus,
+.addverhuur-form select:focus {
+  border-color: #1a4d8f;
+}
+
+.addverhuur-form button {
+  width: 100%;
+  background: linear-gradient(90deg, #1a4d8f 0%, #3b82f6 100%);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(26,77,143,0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.addverhuur-form button:hover {
+  background: linear-gradient(90deg, #3b82f6 0%, #1a4d8f 100%);
+  box-shadow: 0 4px 16px rgba(26,77,143,0.12);
+}
+
+.theme-dark .addverhuur-container,
+.theme-dark .addverhuur-title,
+.theme-dark .addverhuur-form,
+.theme-dark .addverhuur-form input,
+.theme-dark .addverhuur-form textarea {
+  color: #f6f8fa !important;
+  background: transparent !important;
+}
+.theme-light .addverhuur-container,
+.theme-light .addverhuur-title,
+.theme-light .addverhuur-form,
+.theme-light .addverhuur-form input,
+.theme-light .addverhuur-form textarea {
+  color: #222 !important;
+  background: transparent !important;
+}
+
+@media (max-width: 600px) {
+  .addverhuur-container {
+    padding: 12px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

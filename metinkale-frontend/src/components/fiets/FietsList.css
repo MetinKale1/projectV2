@@ -1,0 +1,70 @@
+.fiets-card .card-img-top {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 6px 6px 0 0;
+  background: #eee;
+  display: block;
+}
+
+.fiets-list-grid.theme-dark {
+  background: #222 !important;
+  color: #f6f8fa;
+}
+.fiets-list-grid.theme-light {
+  background: #fff !important;
+  color: #222;
+}
+
+.fiets-list-container {
+  width: 100%;
+}
+
+.fiets-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.2rem;
+}
+
+
+.fiets-item {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  padding: 1.2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-left: 4px solid #007bff;
+  min-height: 340px;
+  justify-content: space-between;
+  background: #fff;
+}
+
+.fiets-item.theme-dark {
+  background: #222 !important;
+  color: #f6f8fa;
+}
+.fiets-item.theme-light {
+  background: #fff !important;
+  color: #222;
+}
+
+@media (max-width: 992px) {
+  .fiets-list-grid {
+    gap: 1.5rem;
+  }
+  .fiets-item {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 600px) {
+  .fiets-list-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  .fiets-item {
+    min-height: 220px;
+  }
+}
