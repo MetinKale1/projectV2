@@ -1,195 +1,50 @@
-// import { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import * as locatieApi from '../../api/locaties';
-
-// const AddLocatie = () => {
-//   const [straat, setStraat] = useState('');
-//   const [huisnummer, setHuisnummer] = useState('');
-//   const [postcode, setPostcode] = useState('');
-//   const [gemeente, setGemeente] = useState('');
-//   const navigate = useNavigate();
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     // Validate inputs
-//     if (!straat || !huisnummer || !postcode || !gemeente) {
-//       alert('Please fill in all fields.');
-//       return;
-//     }
-
-//     // Create new locatie
-//     const newLocatie = {
-//       straat,
-//       huisnummer,
-//       gemeente,
-//       postcode,
-      
-//     };
-
-//     try {
-//       // Add new locatie to the server
-//       await locatieApi.addLocatie(newLocatie);
-//       console.log('New Locatie Added:', newLocatie);
-
-//       // Navigate back to locatie list
-//       navigate('/');
-//     } catch (error) {
-//       console.error('Error adding locatie:', error);
-//       alert('Failed to add locatie. Please try again.');
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h1>Add Locatie</h1>
-//       <form onSubmit={handleSubmit}>
-//         <div>
-//           <label>Straat:</label>
-//           <input
-//             type="text"
-//             value={straat}
-//             onChange={(e) => setStraat(e.target.value)}
-//             placeholder="Enter straat"
-//             required
-//           />
-//         </div>
-
-//         <div>
-//           <label>Huisnummer:</label>
-//           <input
-//             type="text"
-//             value={huisnummer}
-//             onChange={(e) => setHuisnummer(e.target.value)}
-//             placeholder="Enter huisnummer"
-//             required
-//           />
-//         </div>
-
-//         <div>
-//           <label>Postcode:</label>
-//           <input
-//             type="text"
-//             value={postcode}
-//             onChange={(e) => setPostcode(e.target.value)}
-//             placeholder="Enter postcode"
-//             required
-//           />
-//         </div>
-
-//         <div>
-//           <label>Gemeente:</label>
-//           <input
-//             type="text"
-//             value={gemeente}
-//             onChange={(e) => setGemeente(e.target.value)}
-//             placeholder="Enter gemeente"
-//             required
-//           />
-//         </div>
-
-//         <button type="submit">Add Locatie</button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default AddLocatie;
 import { useState } from 'react';
-import { useAuth } from '../../contexts/auth';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/auth';
 import * as locatieApi from '../../api/locaties';
-import './AddLocatie.css';
 
-const AddLocatie = () => {
-  const [straat, setStraat] = useState('');
-  const [nr, setNr] = useState(''); // Changed huisnummer to nr
-  const [postcode, setPostcode] = useState('');
-  const [gemeente, setGemeente] = useState('');
-  const navigate = useNavigate();
+export default function AddLocatie() {
   const { user } = useAuth();
-  if (!user || !user.roles || !user.roles.includes('admin')) {
-    return <Navigate to="/forbidden" replace />;
-  }
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ straat: '', nr: '', gemeente: '', postcode: '' });
+
+  if (!user?.roles?.includes('admin')) return <Navigate to="/forbidden" replace />;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate inputs
-    if (!straat || !nr || !postcode || !gemeente) {
-      alert('Please fill in all fields.');
-      return;
-    }
-
-    // Create new locatie
-    const newLocatie = {
-      straat,
-      nr, // Changed huisnummer to nr
-      gemeente,
-      postcode,
-    };
-    try {
-      await locatieApi.addLocatie(newLocatie);
-      console.log('New Locatie Added:', newLocatie);
-      navigate('/locaties'); // Navigate to '/locaties' instead of '/'
-    } catch (error) {
-      console.error('Error adding locatie:', error);
-      alert('Failed to add locatie. Please try again.');
-    }
+    await locatieApi.addLocatie({ ...form, nr: Number(form.nr), postcode: Number(form.postcode) });
+    navigate('/locaties');
   };
 
   return (
-    <div className="addlocatie-container">
-      <h2 className="addlocatie-title">Locatie toevoegen</h2>
-      <form className="addlocatie-form" onSubmit={handleSubmit}>
-        <div>
-          <label>Straat:</label>
-          <input
-            type="text"
-            value={straat}
-            onChange={(e) => setStraat(e.target.value)}
-            placeholder="Enter straat"
-            required
-          />
+    <div className="py-8 max-w-xl mx-auto">
+      <h1 className="font-display text-3xl font-bold gradient-text mb-8">Locatie Toevoegen</h1>
+      <form onSubmit={handleSubmit} className="card space-y-6">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-2">
+            <label className="block text-white/80 text-sm font-medium mb-2">Straat</label>
+            <input type="text" value={form.straat} onChange={(e) => setForm({ ...form, straat: e.target.value })} className="input-field" required />
+          </div>
+          <div>
+            <label className="block text-white/80 text-sm font-medium mb-2">Nr</label>
+            <input type="number" value={form.nr} onChange={(e) => setForm({ ...form, nr: e.target.value })} className="input-field" required />
+          </div>
         </div>
-
-        <div>
-          <label>Huisnummer:</label>
-          <input
-            type="text"
-            value={nr} // Changed huisnummer to nr
-            onChange={(e) => setNr(e.target.value)} // Changed huisnummer to nr
-            placeholder="Enter huisnummer"
-            required
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-white/80 text-sm font-medium mb-2">Gemeente</label>
+            <input type="text" value={form.gemeente} onChange={(e) => setForm({ ...form, gemeente: e.target.value })} className="input-field" required />
+          </div>
+          <div>
+            <label className="block text-white/80 text-sm font-medium mb-2">Postcode</label>
+            <input type="number" value={form.postcode} onChange={(e) => setForm({ ...form, postcode: e.target.value })} className="input-field" required />
+          </div>
         </div>
-
-        <div>
-          <label>Gemeente:</label>
-          <input
-            type="text"
-            value={gemeente}
-            onChange={(e) => setGemeente(e.target.value)}
-            placeholder="Enter gemeente"
-            required
-          />
+        <div className="flex gap-4">
+          <button type="submit" className="btn-primary flex-1">Toevoegen</button>
+          <button type="button" onClick={() => navigate('/locaties')} className="btn-secondary flex-1">Annuleren</button>
         </div>
-
-        <div>
-          <label>Postcode:</label>
-          <input
-            type="text"
-            value={postcode}
-            onChange={(e) => setPostcode(e.target.value)}
-            placeholder="Enter postcode"
-            required
-          />
-        </div>
-
-        <button type="submit">Add Locatie</button>
       </form>
     </div>
   );
-};
-
-export default AddLocatie;
+}

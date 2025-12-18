@@ -1,28 +1,21 @@
-// src/pages/NotFound.jsx
-import { useLocation, useNavigate } from 'react-router-dom'; // 👈
-import './NotFound.css';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const NotFound = () => {
-  const navigate = useNavigate(); // 👈
+export default function NotFound() {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  // 👇
-  const handleGoHome = () => {
-    navigate('/', { replace: true });
-  };
-
   return (
-    <div className="notfound-container">
-      <h1 className="notfound-title">404 - Pagina niet gevonden</h1>
-      <div className="notfound-message">
-        Er is geen pagina met als url {pathname}, probeer iets anders.
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="font-display text-8xl font-bold gradient-text mb-4">404</h1>
+        <h2 className="text-2xl text-white mb-2">Pagina niet gevonden</h2>
+        <p className="text-white/60 mb-8">
+          Er is geen pagina met url <code className="bg-white/10 px-2 py-1 rounded">{pathname}</code>
+        </p>
+        <button onClick={() => navigate('/', { replace: true })} className="btn-primary">
+          Terug naar Home
+        </button>
       </div>
-      {/* 👇 */}
-      <button className="notfound-link" onClick={handleGoHome}>
-        Terug naar home
-      </button>
     </div>
   );
-};
-
-export default NotFound;
+}

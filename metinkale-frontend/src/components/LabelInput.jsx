@@ -1,35 +1,20 @@
 import { useFormContext } from 'react-hook-form';
 
-export default function LabelInput({
-  label,
-  name,
-  type,
-  validationRules,
-  ...rest
-}) {
-  const {
-    register,
-    formState: { errors, isSubmitting },
-  } = useFormContext();
-
-  const hasError = name in errors;
+export default function LabelInput({ label, name, type, placeholder, validationRules, ...rest }) {
+  const { register, formState: { errors } } = useFormContext();
+  const error = errors[name];
 
   return (
-    <div className='mb-3'>
-      <label htmlFor={name} className='form-label'>
-        {label}
-      </label>
+    <div>
+      <label className="block text-white/80 text-sm font-medium mb-2">{label}</label>
       <input
-        {...register(name, validationRules)}
-        id={name}
         type={type}
-        disabled={isSubmitting}
-        className='form-control'
+        placeholder={placeholder}
+        className={`input-field ${error ? 'border-red-500' : ''}`}
+        {...register(name, validationRules)}
         {...rest}
       />
-      {hasError ? (
-        <div className='form-text text-danger' data-cy='label_input_error'>{errors[name].message}</div>
-      ) : null}
+      {error && <p className="text-red-400 text-sm mt-1">{error.message}</p>}
     </div>
   );
 }

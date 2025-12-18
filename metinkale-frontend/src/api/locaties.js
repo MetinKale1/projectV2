@@ -20,7 +20,7 @@ export const getAll = async () => {
     const response = await axios.get(baseUrl, {
       withCredentials: true, // Ensure credentials are sent with request
     });
-    return response;
+    return response.data.items || response.data;
   } catch (error) {
     console.error('Error fetching data:', error);
     throw error;

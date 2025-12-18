@@ -1,94 +1,58 @@
-// // src/pages/feedback/FeedbackDetail.jsx
-// import { useParams } from 'react-router-dom';
-// import { FEEDBACK_DATA } from '../../api/mock_data';
-
-// const FeedbackDetail = () => {
-//   const { id } = useParams();
-//   const feedbackID = Number(id);
-//   console.log(`Feedback ID from URL: ${feedbackID}`);
-
-//   const feedback = FEEDBACK_DATA.find((f) => f.feedbackID === feedbackID);
-
-//   if (!feedback) {
-//     return (
-//       <div>
-//         <h1>Feedback niet gevonden</h1>
-//         <p>Er is geen feedback met ID {id}.</p>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div>
-//       <h1>Feedback Detail</h1>
-//       <p><strong>Verhuur ID:</strong> {feedback.verhuurID}</p>
-//       <p><strong>Omschrijving:</strong> {feedback.omschrijving}</p>
-//       <p><strong>Datum:</strong> {feedback.datum}</p>
-//       <p><strong>Rating:</strong> {feedback.rating}</p>
-//     </div>
-//   );
-// };
-
-// export default FeedbackDetail;
-import  { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import * as feedbackApi from '../../api/feedbacks';
-import './FeedbackDetail.css';
-import { useTheme } from '../../contexts/theme';
 
-const FeedbackDetail = () => {
-  const { theme } = useTheme();
+export default function FeedbackDetail() {
   const { id } = useParams();
-  const feedbackID = Number(id);
+  const navigate = useNavigate();
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchFeedback = async () => {
-      try {
-        const feedbackData = await feedbackApi.getById(feedbackID);
-        setFeedback(feedbackData);
-      } catch (err) {
-        setError('Failed to load feedback');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    feedbackApi.getById(Number(id)).then((data) => {
+      setFeedback(data);
+      setLoading(false);
+    });
+  }, [id]);
 
-    fetchFeedback();
-  }, [feedbackID]);
+  if (loading) return <div className="text-center py-12 text-white/60">Laden...</div>;
+  if (!feedback) return <div className="text-center py-12 text-white/40">Feedback niet gevonden</div>;
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!feedback) {
-    return (
-      <div className={`feedbackdetail-container theme-${theme}`}>
-        <h1 className={`detail-title theme-${theme}`}>Feedback niet gevonden</h1>
-        <p>Er is geen feedback met ID {id}.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className={`feedbackdetail-container theme-${theme}`}> 
-      <h2 className="feedbackdetail-title">Feedback detail</h2>
-      <div className="feedbackdetail-info">
-        <p><strong>Verhuur ID:</strong> {feedback.verhuurID}</p>
-        <p><strong>Omschrijving:</strong> {feedback.omschrijving}</p>
-        <p><strong>Datum:</strong> {feedback.datum}</p>
-        <p><strong>Rating:</strong> {feedback.rating}</p>
-      </div>
-      {/* ...knoppen... */}
+  const StarRating = ({ rating }) => (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span key={star} className={`text-2xl ${star <= rating ? 'text-[#F7C948]' : 'text-white/20'}`}>★</span>
+      ))}
     </div>
   );
-};
 
-export default FeedbackDetail;
+  return (
+    <div className="py-8 max-w-2xl mx-auto">
+      <button onClick={() => navigate('/feedback')} className="text-white/60 hover:text-white mb-6">
+        ← Terug naar feedback
+      </button>
+
+      <div className="card">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="font-display text-2xl font-bold gradient-text">Feedback Detail</h1>
+          <StarRating rating={feedback.rating} />
+        </div>
+
+        <div className="space-y-4">
+          <div className="py-3 border-b border-white/10">
+            <span className="text-white/60 text-sm">Omschrijving</span>
+            <p className="text-white mt-1">{feedback.omschrijving}</p>
+          </div>
+          <div className="flex justify-between py-3 border-b border-white/10">
+            <span className="text-white/60">Datum</span>
+            <span className="text-white">{feedback.datum}</span>
+          </div>
+          <div className="flex justify-between py-3">
+            <span className="text-white/60">Verhuur ID</span>
+            <span className="text-white">{feedback.verhuurID}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

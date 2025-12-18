@@ -1,106 +1,79 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/auth';
-import { getById, updateFiets } from '../../api/fietsen';
-import './FietsUpdate.css';
-import { useTheme } from '../../contexts/theme';
+import * as fietsApi from '../../api/fietsen';
 
-const FietsUpdate = () => {
-  const { theme } = useTheme();
-  const { fietsID } = useParams();
-  const [fiets, setFiets] = useState(null);
-  const [editModel, setEditModel] = useState('');
-  const [editType, setEditType] = useState('');
-  const [editStatus, setEditStatus] = useState('');
-  const [editLocatie, setEditLocatie] = useState('');
-  const [editFoto, setEditFoto] = useState('');
-  const [fotoPreview, setFotoPreview] = useState('');
-  const [message, setMessage] = useState('');
-  const navigate = useNavigate();
+export default function FietsUpdate() {
+  const { id } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ model: '', type: '', status: '', locatieID: '', foto: '' });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFiets = async () => {
-      try {
-        const data = await getById(fietsID);
-        setFiets(data);
-        setEditModel(data.model || '');
-        setEditType(data.type || '');
-        setEditStatus(data.status || '');
-        setEditLocatie(data.locatieID || '');
-        setEditFoto(data.foto || '');
-        setFotoPreview(data.foto || '');
-      } catch {
-        setMessage('Fiets niet gevonden');
-      }
-    };
-    fetchFiets();
-  }, [fietsID]);
+    fietsApi.getById(Number(id)).then((data) => {
+      setForm(data);
+      setLoading(false);
+    });
+  }, [id]);
 
-  if (!user?.roles?.includes('admin')) {
-    return <Navigate to="/forbidden" replace />;
-  }
+  if (!user?.roles?.includes('admin')) return <Navigate to="/forbidden" replace />;
+  if (loading) return <div className="text-center py-12 text-white/60">Laden...</div>;
 
-  const handleUpdateFiets = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateFiets(fietsID, {
-        model: editModel,
-        type: editType,
-        status: editStatus,
-        locatieID: editLocatie,
-        foto: editFoto,
-      });
-      setMessage('Fiets succesvol geüpdatet!');
-      setTimeout(() => navigate('/fietsen'), 1500);
+      await fietsApi.updateFiets(Number(id), { ...form, locatieID: Number(form.locatieID) });
+      navigate('/fietsen');
     } catch {
-      setMessage('Updaten mislukt.');
+      alert('Kon fiets niet bijwerken');
     }
   };
-
-  const handleFotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setEditFoto(`/images/${file.name}`);
-      setFotoPreview(URL.createObjectURL(file));
-    }
-  };
-
-  if (!fiets) return <div>Loading...</div>;
 
   return (
-    <div className={`fietsupdate-container theme-${theme}`}>
-      <h1 className={`detail-title theme-${theme}`}>Fiets bijwerken</h1>
-      <form className="fietsupdate-form" onSubmit={handleUpdateFiets}>
-        <label>Model:
-          <input type="text" data-cy="merk_input" value={editModel} onChange={(e) => setEditModel(e.target.value)} required />
-        </label>
-        <label>Type:
-          <input type="text" data-cy="type_input" value={editType} onChange={(e) => setEditType(e.target.value)} required />
-        </label>
-        <label>Status:
-          <select data-cy="status_input" value={editStatus} onChange={(e) => setEditStatus(e.target.value)} required>
-            <option value="beschikbaar">beschikbaar</option>
-            <option value="verhuurd">verhuurd</option>
+    <div className="py-8 max-w-xl mx-auto">
+      <h1 className="font-display text-3xl font-bold gradient-text mb-8">Fiets Bewerken</h1>
+      
+      <form onSubmit={handleSubmit} className="card space-y-6">
+        <div>
+          <label className="block text-white/80 text-sm font-medium mb-2">Model</label>
+          <input type="text" value={form.model} onChange={(e) => setForm({ ...form, model: e.target.value })} className="input-field" required />
+        </div>
+
+        <div>
+          <label className="block text-white/80 text-sm font-medium mb-2">Type</label>
+          <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="input-field" required>
+            <option value="City">City</option>
+            <option value="Mountain">Mountain</option>
+            <option value="E-bike">E-bike</option>
+            <option value="Race">Race</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-white/80 text-sm font-medium mb-2">Status</label>
+          <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="input-field">
+            <option value="Active">Active</option>
+            <option value="verhuurd">Verhuurd</option>
             <option value="Inactive">Inactive</option>
           </select>
-        </label>
-        <label>Locatie ID:
-          <input type="number" data-cy="locatie_input" value={editLocatie} onChange={(e) => setEditLocatie(e.target.value)} required />
-        </label>
-        <label>Foto upload:
-          <input type="file" data-cy="foto_input" accept="image/*" onChange={handleFotoChange} />
-        </label>
-        {fotoPreview && (
-          <div style={{ margin: '1rem 0' }}>
-            <img src={fotoPreview} alt="Preview" style={{ maxWidth: '200px', borderRadius: '8px' }} />
-          </div>
-        )}
-        <button type="submit" data-cy="submit_btn">Update fiets</button>
+        </div>
+
+        <div>
+          <label className="block text-white/80 text-sm font-medium mb-2">Locatie ID</label>
+          <input type="number" value={form.locatieID} onChange={(e) => setForm({ ...form, locatieID: e.target.value })} className="input-field" required />
+        </div>
+
+        <div>
+          <label className="block text-white/80 text-sm font-medium mb-2">Foto URL</label>
+          <input type="url" value={form.foto || ''} onChange={(e) => setForm({ ...form, foto: e.target.value })} className="input-field" />
+        </div>
+
+        <div className="flex gap-4">
+          <button type="submit" className="btn-primary flex-1">Opslaan</button>
+          <button type="button" onClick={() => navigate('/fietsen')} className="btn-secondary flex-1">Annuleren</button>
+        </div>
       </form>
-      {message && <div className="mt-2">{message}</div>}
     </div>
   );
-};
-
-export default FietsUpdate;
+}

@@ -1,79 +1,66 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/auth';
-import Verhuur from './Verhuur';
-import { useTheme } from '../../contexts/theme';
-import './VerhuurList.css';
 import * as verhuurApi from '../../api/verhuur';
 
-const VerhuurList = () => {
-  const { theme } = useTheme();
-  const [verhuur, setVerhuur] = useState([]);
+export default function VerhuurList() {
+  const [verhuren, setVerhuren] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetchVerhuur = async () => {
-      try {
-        let data;
-        if (user?.roles?.includes('admin')) {
-          data = await verhuurApi.getAll();
-        } else if (user?.klantID) {
-          data = await verhuurApi.getByKlantId(user.klantID);
-        } else {
-          data = [];
-        }
-        if (Array.isArray(data)) {
-          setVerhuur(data);
-        } else if (data && data.items) {
-          setVerhuur(data.items);
-        } else {
-          setVerhuur([]);
-        }
-      } catch (err) {
-        setError('Failed to load verhuur');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchVerhuur();
-  }, [user]);
+    verhuurApi.getAll().then((data) => {
+      setVerhuren(data);
+      setLoading(false);
+    });
+  }, []);
 
-  const navigateToAddVerhuur = () => {
-    navigate('/verhuur/addVerhuur');
-  };
+  if (loading) return <div className="text-center py-12 text-white/60">Laden...</div>;
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  const isActive = (v) => new Date(v.inleverdatum) >= new Date();
 
   return (
-    <div className={`verhuur-list-container mt-3 theme-${theme}`} data-cy="verhuur-list">
-      <h2 className="mb-4 text-center">Verhuur</h2>
-      {user?.roles?.includes('admin') && (
-        <button className="btn btn-primary mb-4" onClick={navigateToAddVerhuur} data-cy="add-verhuur-button">
-          Add Verhuur
-        </button>
-      )}
-      <div className={`verhuur-list-grid theme-${theme}`}> 
-        {verhuur
-          .sort((a, b) => a.verhuurID - b.verhuurID)
-          .map((item) => (
-            <div className={`verhuur-item theme-${theme}`} key={item.verhuurID} data-cy="verhuur" style={{ cursor: 'pointer' }} 
-              onClick={() => navigate(`/verhuur/${item.verhuurID}`)}>
-              <Verhuur {...item} theme={theme} />
-            </div>
-          ))}
+    <div className="py-8">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="font-display text-3xl font-bold gradient-text">Verhuringen</h1>
+          <p className="text-white/60 mt-1">Overzicht van alle verhuringen</p>
+        </div>
+        {user?.roles?.includes('admin') && (
+          <button onClick={() => navigate('/verhuur/add')} className="btn-primary text-sm">
+            + Nieuwe Verhuur
+          </button>
+        )}
       </div>
+
+      <div className="grid gap-4">
+        {verhuren.map((v) => (
+          <div
+            key={v.verhuurID}
+            onClick={() => navigate(`/verhuur/${v.verhuurID}`)}
+            className="card cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-4">
+              <div className={`w-3 h-3 rounded-full ${isActive(v) ? 'bg-green-400' : 'bg-white/20'}`} />
+              <div>
+                <p className="font-medium text-white">Verhuur #{v.verhuurID}</p>
+                <p className="text-white/60 text-sm">Fiets #{v.fietsID} • Klant #{v.klantID}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-white/80 text-sm">{v.uitleendatum} → {v.inleverdatum}</p>
+              <span className={`text-xs px-2 py-1 rounded-full ${isActive(v) ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white/40'}`}>
+                {isActive(v) ? 'Actief' : 'Afgelopen'}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {verhuren.length === 0 && (
+        <div className="card text-center py-12 text-white/40">Geen verhuringen gevonden</div>
+      )}
     </div>
   );
-};
-
-export default VerhuurList;
+}

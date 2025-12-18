@@ -1,6 +1,5 @@
 // src/App.jsx
 import { Link } from 'react-router-dom'; // 👈
-import './AppStyles.css';
 
 function App() {
   return (

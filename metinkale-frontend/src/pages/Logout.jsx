@@ -1,32 +1,19 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/auth';
 
 export default function Logout() {
-  const { isAuthed, logout } = useAuth();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     logout();
-  }, [logout]);
-
-  if (isAuthed) {
-    return (
-      <div className="container">
-        <div className='row'>
-          <div className='col-12'>
-            <h1>Logging out...</h1>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    navigate('/', { replace: true });
+  }, [logout, navigate]);
 
   return (
-    <div className="container">
-      <div className='row'>
-        <div className='col-12'>
-          <h1>You were successfully logged out</h1>
-        </div>
-      </div>
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <p className="text-white/60">Uitloggen...</p>
     </div>
   );
 }

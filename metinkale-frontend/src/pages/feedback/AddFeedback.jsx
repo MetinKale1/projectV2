@@ -1,86 +1,70 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as feedbackApi from '../../api/feedbacks';
-import './AddFeedback.css';
 
-const AddFeedback = () => {
-  const [verhuurID, setVerhuurID] = useState('');
-  const [omschrijving, setOmschrijving] = useState('');
-  const [rating, setRating] = useState('');
+export default function AddFeedback() {
   const navigate = useNavigate();
+  const [form, setForm] = useState({ verhuurID: '', omschrijving: '', rating: 5 });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate inputs
-    if (!verhuurID || !omschrijving || !rating || rating < 1 || rating > 5) {
-      alert('Please enter a valid verhuur ID, description, and a rating between 1 and 5.');
-      return;
-    }
-
-    // Create new feedback
-    const newFeedback = {
-      verhuurID: Number(verhuurID),
-      omschrijving,
-      datum: new Date().toISOString().split('T')[0], // Current date
-      rating: Number(rating),
-    };
-
-    try {
-      // Add new feedback to the server
-      await feedbackApi.addFeedback(newFeedback);
-      console.log('New Feedback Added:', newFeedback);
-
-      // Navigate back to feedback list
-      navigate('/');
-    } catch (error) {
-      console.error('Error adding feedback:', error);
-      alert('Failed to add feedback. Please try again.');
-    }
+    await feedbackApi.addFeedback({
+      verhuurID: Number(form.verhuurID),
+      omschrijving: form.omschrijving,
+      rating: form.rating,
+      datum: new Date().toISOString().slice(0, 10),
+    });
+    navigate('/feedback');
   };
 
   return (
-    <div className="addfeedback-container">
-      <h2 className="addfeedback-title">Feedback toevoegen</h2>
-      <form className="addfeedback-form" onSubmit={handleSubmit}>
+    <div className="py-8 max-w-xl mx-auto">
+      <h1 className="font-display text-3xl font-bold gradient-text mb-8">Feedback Geven</h1>
+
+      <form onSubmit={handleSubmit} className="card space-y-6">
         <div>
-          <label>Verhuur ID:</label>
+          <label className="block text-white/80 text-sm font-medium mb-2">Verhuur ID</label>
           <input
             type="number"
-            value={verhuurID}
-            onChange={(e) => setVerhuurID(e.target.value)}
-            placeholder="Enter verhuur ID"
+            value={form.verhuurID}
+            onChange={(e) => setForm({ ...form, verhuurID: e.target.value })}
+            className="input-field"
             required
           />
         </div>
 
         <div>
-          <label>Feedback omschrijving:</label>
+          <label className="block text-white/80 text-sm font-medium mb-2">Rating</label>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                onClick={() => setForm({ ...form, rating: star })}
+                className={`text-3xl transition-transform hover:scale-110 ${star <= form.rating ? 'text-[#F7C948]' : 'text-white/20'}`}
+              >
+                ★
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-white/80 text-sm font-medium mb-2">Omschrijving</label>
           <textarea
-            value={omschrijving}
-            onChange={(e) => setOmschrijving(e.target.value)}
-            placeholder="Schrijf je feedback hier..."
+            value={form.omschrijving}
+            onChange={(e) => setForm({ ...form, omschrijving: e.target.value })}
+            className="input-field min-h-[120px]"
+            placeholder="Deel je ervaring..."
             required
           />
         </div>
 
-        <div>
-          <label>Rating (1-5):</label>
-          <input
-            type="number"
-            value={rating}
-            onChange={(e) => setRating(e.target.value)}
-            min="1"
-            max="5"
-            placeholder="Geef een rating (1-5)"
-            required
-          />
+        <div className="flex gap-4">
+          <button type="submit" className="btn-primary flex-1">Versturen</button>
+          <button type="button" onClick={() => navigate('/feedback')} className="btn-secondary flex-1">Annuleren</button>
         </div>
-
-        <button className="addfeedback-form-button" type="submit">Feedback toevoegen</button>
       </form>
     </div>
   );
-};
-
-export default AddFeedback;
+}

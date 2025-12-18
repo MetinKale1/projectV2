@@ -1,36 +1,8 @@
-// src/components/Error.jsx
-import { isAxiosError } from 'axios';
-
 export default function Error({ error }) {
-  // 👆 1 👇 2
-  if (isAxiosError(error)) {
-    return (
-      <div className='alert alert-danger'>
-        <h4 className='alert-heading'>Oops, something went wrong</h4>
-        <p>
-          {/* 👇 3 */}
-          {error?.response?.data?.message || error.message}
-          {error?.response?.data?.details && (
-            <>
-              :
-              <br />
-              {JSON.stringify(error.response.data.details)}
-            </>
-          )}
-        </p>
-      </div>
-    );
-  }
-
-  // 👇 4
-  if (error) {
-    return (
-      <div className='alert alert-danger'>
-        <h4 className='alert-heading'>An unexpected error occured</h4>
-        {error.message || JSON.stringify(error)}
-      </div>
-    );
-  }
-
-  return null; // 👈 5
+  if (!error) return null;
+  return (
+    <div className="bg-red-500/20 border border-red-500/50 text-red-400 px-4 py-3 rounded-xl mb-4">
+      {typeof error === 'string' ? error : error.message || 'Er is een fout opgetreden'}
+    </div>
+  );
 }

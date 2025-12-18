@@ -1,79 +1,61 @@
-// ...existing code...
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as feedbackApi from '../../api/feedbacks';
-import Feedback from './Feedback';
-import { useThemeColors } from '../../contexts/theme';
-import './FeedbackList.css';
 
-const FeedbackList = () => {
-  const { theme, textTheme } = useThemeColors();
+export default function FeedbackList() {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchFeedbacks = async () => {
-      try {
-        const feedbacksData = await feedbackApi.getAll();
-        setFeedbacks(feedbacksData);
-      } catch (err) {
-        setError('Failed to load feedbacks');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFeedbacks();
+    feedbackApi.getAll().then((data) => {
+      setFeedbacks(data);
+      setLoading(false);
+    });
   }, []);
 
-  const navigateToAddFeedback = () => {
-    navigate('/feedback/addFeedback');
-  };
+  if (loading) return <div className="text-center py-12 text-white/60">Laden...</div>;
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  // Dynamische kleuren voor thema
-  // Theme class for CSS
-  const themeClass = theme === 'dark' ? 'theme-dark' : 'theme-light';
-  // Dynamische kleuren voor thema
-  // Theme kleuren uit context
-  const themeColors = {
-    dark: { bg: '#222', text: '#f8f9fa' },
-    light: { bg: '#f8f9fa', text: '#222' },
-  };
-  const bgColor = themeColors[theme]?.bg;
-  const textColor = themeColors[theme]?.text;
+  const StarRating = ({ rating }) => (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span key={star} className={`text-lg ${star <= rating ? 'text-[#F7C948]' : 'text-white/20'}`}>★</span>
+      ))}
+    </div>
+  );
 
   return (
-    <div
-      className={`feedback-list-container ${themeClass}`}
-      data-cy="feedback-list"
-      style={{ background: bgColor, color: textColor }}
-    >
-      <h2 className={`feedback-list-title ${themeClass}`}>Customer Feedback</h2>
-      <button className="btn btn-primary mb-4" onClick={navigateToAddFeedback} data-cy="add-feedback-button">
-        Add Feedback
-      </button>
-      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 g-3">
+    <div className="py-8" data-cy="feedback-list">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="font-display text-3xl font-bold gradient-text">Klant Feedback</h1>
+          <p className="text-white/60 mt-1">Wat onze klanten zeggen</p>
+        </div>
+        <button onClick={() => navigate('/feedback/addFeedback')} className="btn-primary text-sm" data-cy="add-feedback-button">
+          + Feedback Geven
+        </button>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {feedbacks
           .sort((a, b) => new Date(b.datum) - new Date(a.datum))
-          .map((feedback) => (
-            <div className="col" key={feedback.feedbackID} data-cy="feedback">
-              <Feedback {...feedback} />
+          .map((fb) => (
+            <div
+              key={fb.feedbackID}
+              onClick={() => navigate(`/feedback/${fb.feedbackID}`)}
+              className="card cursor-pointer"
+              data-cy="feedback"
+            >
+              <StarRating rating={fb.rating} />
+              <p className="text-white mt-3 line-clamp-3">{fb.omschrijving}</p>
+              <p className="text-white/40 text-sm mt-4">{fb.datum}</p>
             </div>
           ))}
       </div>
+
+      {feedbacks.length === 0 && (
+        <div className="card text-center py-12 text-white/40">Nog geen feedback</div>
+      )}
     </div>
   );
-};
-
-export default FeedbackList;
+}

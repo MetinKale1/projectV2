@@ -1,87 +1,66 @@
-// ...existing code...
-import  { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import * as locatieApi from '../../api/locaties';
 import * as fietsApi from '../../api/fietsen';
 import Fiets from '../../components/fiets/Fiets';
-import './LocatieDetail.css';
-import { useTheme } from '../../contexts/theme';
 
-const LocatieDetail = () => {
-  const { theme } = useTheme();
+export default function LocatieDetail() {
   const { id } = useParams();
-  const idAsNumber = Number(id);
+  const navigate = useNavigate();
   const [locatie, setLocatie] = useState(null);
   const [fietsen, setFietsen] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const locatieData = await locatieApi.getById(idAsNumber);
-        setLocatie(locatieData);
-
-        const fietsenData = await fietsApi.getAll();
-        const fietsenBijLocatie = 
-        Array.isArray(fietsenData) ? fietsenData.filter((fiets) => fiets.locatieID === idAsNumber) : [];
-        setFietsen(fietsenBijLocatie);
-      } catch (err) {
-        setError('Failed to load data');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+      const loc = await locatieApi.getById(Number(id));
+      setLocatie(loc);
+      const allFietsen = await fietsApi.getAll();
+      setFietsen(allFietsen.filter((f) => f.locatieID === Number(id)));
+      setLoading(false);
     };
-
     fetchData();
-  }, [idAsNumber]);
+  }, [id]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!locatie) {
-    return (
-      <div className={`locatiedetail-container theme-${theme}`}>
-        <h1 className={`detail-title theme-${theme}`}>Locatie niet gevonden</h1>
-        <p>Er is geen locatie met id {id}.</p>
-      </div>
-    );
-  }
+  if (loading) return <div className="text-center py-12 text-white/60">Laden...</div>;
+  if (!locatie) return <div className="text-center py-12 text-white/40">Locatie niet gevonden</div>;
 
   return (
-    <div className={`locatiedetail-container theme-${theme}`} data-cy="locatie-detail"> 
-      <h2 className="locatiedetail-title" data-cy="locatie-detail-title">Locatie detail</h2>
-      <div className="locatiedetail-info">
-        <p data-cy="locatie-detail-straat"><strong>Straat:</strong> {locatie.straat}</p>
-        <p data-cy="locatie-detail-nummer"><strong>Nummer:</strong> {locatie.nr}</p>
-        <p data-cy="locatie-detail-gemeente"><strong>Gemeente:</strong> {locatie.gemeente}</p>
-        <p data-cy="locatie-detail-postcode"><strong>Postcode:</strong> {locatie.postcode}</p>
-      </div>
+    <div className="py-8" data-cy="locatie-detail">
+      <button onClick={() => navigate('/locaties')} className="text-white/60 hover:text-white mb-6 flex items-center gap-2">
+        ← Terug naar locaties
+      </button>
 
-      <h2>Fietsen bij deze locatie:</h2>
-      {fietsen.length > 0 ? (
-        <div className='grid mt-3'>
-          <div className='row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 g-3'>
-            {fietsen
-              .sort((a, b) => a.model.toUpperCase().localeCompare(b.model.toUpperCase()))
-              .map((fiets) => (
-                <div className='col' key={fiets.fietsID}>
-                  <Fiets {...fiets} />
-                </div>
-              ))}
+      <div className="card mb-8">
+        <div className="flex items-start gap-4">
+          <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#00B4D8] to-[#FF6B35] flex items-center justify-center flex-shrink-0">
+            <span className="text-3xl">📍</span>
+          </div>
+          <div>
+            <h1 className="font-display text-3xl font-bold gradient-text mb-2" data-cy="locatie-detail-title">
+              {locatie.gemeente}
+            </h1>
+            <p className="text-white/80" data-cy="locatie-detail-straat">{locatie.straat} {locatie.nr}</p>
+            <p className="text-white/60" data-cy="locatie-detail-postcode">{locatie.postcode}</p>
           </div>
         </div>
+      </div>
+
+      <h2 className="font-display text-2xl font-bold text-white mb-6">
+        Fietsen op deze locatie ({fietsen.length})
+      </h2>
+
+      {fietsen.length > 0 ? (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {fietsen.map((fiets) => (
+            <Fiets key={fiets.fietsID} {...fiets} />
+          ))}
+        </div>
       ) : (
-        <p>Er zijn geen fietsen gekoppeld aan deze locatie.</p>
+        <div className="card text-center py-8 text-white/40">
+          Geen fietsen beschikbaar op deze locatie
+        </div>
       )}
     </div>
   );
-};
-
-export default LocatieDetail;
+}

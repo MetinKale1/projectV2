@@ -29,6 +29,7 @@ import VerhuurDetail from './pages/verhuur/VerhuurDetail.jsx';
 import Profile from './components/Profile.jsx';
 import HuurFiets from './pages/verhuur/HuurFiets.jsx';
 import Forbidden from './pages/Forbidden.jsx';
+import './index.css';
 // // 👇
 const router = createBrowserRouter([
   {

@@ -1,129 +1,55 @@
 import { useState } from 'react';
-import { useAuth } from '../../contexts/auth';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/auth';
 import * as verhuurApi from '../../api/verhuur';
-import './AddVerhuur.css';
 
-const AddVerhuur = () => {
-  const [klantID, setKlantID] = useState('');
-  const [fietsID, setFietsID] = useState('');
-  const [uitleendatum, setUitleendatum] = useState('');
-  const [inleverdatum, setInleverdatum] = useState('');
-  const [showPopup, setShowPopup] = useState(true);
-  const navigate = useNavigate();
+export default function AddVerhuur() {
   const { user } = useAuth();
-  if (!user || !user.roles || !user.roles.includes('admin')) {
-    return <Navigate to="/forbidden" replace />;
-  }
-  // Toon popup bij laden van de pagina
-  // Popup verdwijnt na klikken op OK
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ klantID: '', fietsID: '', uitleendatum: '', inleverdatum: '' });
+
+  if (!user?.roles?.includes('admin')) return <Navigate to="/forbidden" replace />;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!klantID || !fietsID || !uitleendatum || !inleverdatum) {
-      alert('Please fill in all fields.');
-      return;
-    }
-
-    const newVerhuur = {
-      klantID: Number(klantID),
-      fietsID: Number(fietsID),
-      uitleendatum,
-      inleverdatum,
-    };
-
-    try {
-      const createdVerhuur = await verhuurApi.addVerhuur(newVerhuur);
-      console.log('Backend response:', createdVerhuur);
-      if (createdVerhuur && createdVerhuur.verhuurID) {
-        alert(`Verhuur succesvol aangemaakt! ID: ${createdVerhuur.verhuurID}`);
-        navigate(`/verhuur/${createdVerhuur.verhuurID}`);
-      } else {
-        alert('Verhuur aangemaakt, maar geen verhuurID ontvangen van backend. Response: ' 
-          + JSON.stringify(createdVerhuur));
-        navigate('/verhuur');
-      }
-    } catch (error) {
-      console.error('Error adding verhuur:', error);
-      alert('Failed to add verhuur. Please try again.');
-    }
+    const result = await verhuurApi.addVerhuur({
+      klantID: Number(form.klantID),
+      fietsID: Number(form.fietsID),
+      uitleendatum: form.uitleendatum,
+      inleverdatum: form.inleverdatum,
+    });
+    navigate(`/verhuur/${result.verhuurID}`);
   };
 
   return (
-    <div className="addverhuur-container">
-      {showPopup && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-        }}>
-          <div style={{
-            background: 'var(--background, #fff)',
-            color: 'var(--text, #222)',
-            padding: '32px',
-            borderRadius: '16px',
-            boxShadow: '0 2px 16px rgba(0,0,0,0.15)',
-            maxWidth: '400px',
-            textAlign: 'center',
-          }}>
-            <h3 style={{marginBottom: '16px'}}>Let op!</h3>
-            <p style={{marginBottom: '24px'}}>Dit scherm is alleen bedoeld om manueel een verhuur aan te maken als de klant problemen heeft met het systeem.<br/>Gebruik dit alleen in uitzonderlijke gevallen.</p>
-            <button style={{padding: '10px 24px', borderRadius: '8px', background: 'linear-gradient(90deg, #1a4d8f 0%, #3b82f6 100%)', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer'}} onClick={() => setShowPopup(false)}>OK</button>
+    <div className="py-8 max-w-xl mx-auto">
+      <h1 className="font-display text-3xl font-bold gradient-text mb-8">Nieuwe Verhuur</h1>
+      <form onSubmit={handleSubmit} className="card space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-white/80 text-sm font-medium mb-2">Klant ID</label>
+            <input type="number" value={form.klantID} onChange={(e) => setForm({ ...form, klantID: e.target.value })} className="input-field" required />
+          </div>
+          <div>
+            <label className="block text-white/80 text-sm font-medium mb-2">Fiets ID</label>
+            <input type="number" value={form.fietsID} onChange={(e) => setForm({ ...form, fietsID: e.target.value })} className="input-field" required />
           </div>
         </div>
-      )}
-      <h2 className="addverhuur-title">Verhuur toevoegen</h2>
-      <form className="addverhuur-form" onSubmit={handleSubmit}>
-        <div>
-          <label>Klant ID:</label>
-          <input
-            type="number"
-            value={klantID}
-            onChange={(e) => setKlantID(e.target.value)}
-            placeholder="Enter klant ID"
-            required
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-white/80 text-sm font-medium mb-2">Uitleendatum</label>
+            <input type="date" value={form.uitleendatum} onChange={(e) => setForm({ ...form, uitleendatum: e.target.value })} className="input-field" required />
+          </div>
+          <div>
+            <label className="block text-white/80 text-sm font-medium mb-2">Inleverdatum</label>
+            <input type="date" value={form.inleverdatum} onChange={(e) => setForm({ ...form, inleverdatum: e.target.value })} className="input-field" required />
+          </div>
         </div>
-        <div>
-          <label>Fiets ID:</label>
-          <input
-            type="number"
-            value={fietsID}
-            onChange={(e) => setFietsID(e.target.value)}
-            placeholder="Enter fiets ID"
-            required
-          />
+        <div className="flex gap-4">
+          <button type="submit" className="btn-primary flex-1">Aanmaken</button>
+          <button type="button" onClick={() => navigate('/verhuur')} className="btn-secondary flex-1">Annuleren</button>
         </div>
-        <div>
-          <label>Uitleendatum:</label>
-          <input
-            type="date"
-            value={uitleendatum}
-            onChange={(e) => setUitleendatum(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Inleverdatum:</label>
-          <input
-            type="date"
-            value={inleverdatum}
-            onChange={(e) => setInleverdatum(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Add Verhuur</button>
       </form>
     </div>
   );
-};
-
-export default AddVerhuur;
+}

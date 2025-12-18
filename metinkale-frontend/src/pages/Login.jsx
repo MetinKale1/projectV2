@@ -1,105 +1,84 @@
-// src/pages/Login.jsx
-import { useCallback } from 'react'; // 👈 1
-import { useNavigate,useLocation } from 'react-router-dom'; // 👈 3
+import { useCallback } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import LabelInput from '../components/LabelInput';
-import { useAuth } from '../contexts/auth'; // 👈 2
-import Error from '../components/Error'; // 👈 5
-import './Login.css';
-
-const validationRules = {
-  email: {
-    required: 'Email is required',
-  },
-  password: {
-    required: 'Password is required',
-  },
-};
+import { useAuth } from '../contexts/auth';
+import Error from '../components/Error';
 
 export default function Login() {
   const { search } = useLocation();
-  const { error, loading, login } = useAuth(); // 👈 2, 4 en 5
+  const { error, loading, login } = useAuth();
   const navigate = useNavigate();
 
-  // 👇 7
   const methods = useForm({
-    defaultValues: {
-      email: 'peter.parker@email.com',
-      password: '12345678',
-    },
+    defaultValues: { email: '', password: '' },
   });
-  const { handleSubmit, reset } = methods; // 👈 1 en 6
+  const { handleSubmit, reset } = methods;
 
-  // 👇 6
-  const handleCancel = useCallback(() => {
-    reset();
-  }, [reset]);
-
-  // 👇 1
-  const handleLogin = useCallback(
-    async ({ email, password }) => {
-      const loggedIn = await login(email, password); // 👈 2
-      // 👇 3
-      if (loggedIn) {
-        const params = new URLSearchParams(search);
-        navigate({
-          pathname: params.get('redirect') || '/',
-          replace: true,
-        });
-      }
-    },
-    [login, navigate,search], // 👈 2 en 3
-  );
+  const handleLogin = useCallback(async ({ email, password }) => {
+    const loggedIn = await login(email, password);
+    if (loggedIn) {
+      const params = new URLSearchParams(search);
+      navigate({ pathname: params.get('redirect') || '/', replace: true });
+    }
+  }, [login, navigate, search]);
 
   return (
-    <FormProvider {...methods}>
-      <div className='login-container'>
-        <h2 className='login-title'>Login</h2>
-        <form
-          className='login-form d-flex flex-column'
-          onSubmit={handleSubmit(handleLogin)}
-        >
-          {/* 👆 1 */}
-          <Error error={error} /> {/* 👈 5 */}
-          <LabelInput
-            label='email'
-            type='text'
-            name='email'
-            placeholder='your@email.com'
-            validationRules={validationRules.email}
-            data-cy='email_input'
-          />
-          <LabelInput
-            label='password'
-            type='password'
-            name='password'
-            validationRules={validationRules.password}
-            data-cy='password_input'
-          />
-          <div className='clearfix'>
-            <div className='btn-group float-end'>
-              <button
-                type='submit'
-                className='btn btn-primary'
-                disabled={loading}
-                data-cy='submit_btn'
-              >
-                {/* 👆 4 */}
-                Sign in
-              </button>
+    <div className="min-h-[70vh] flex items-center justify-center py-12">
+      <div className="card w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="font-display text-3xl font-bold gradient-text mb-2">Welkom Terug</h1>
+          <p className="text-white/60">Log in op je account</p>
+        </div>
 
-              <button
-                type='button'
-                className='btn btn-light'
-                onClick={handleCancel}
-              >
-                {/* 👆 6*/}
-                Cancel
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(handleLogin)} className="space-y-6">
+            <Error error={error} />
+
+            <LabelInput
+              label="E-mailadres"
+              type="email"
+              name="email"
+              placeholder="jouw@email.com"
+              validationRules={{ required: 'E-mail is verplicht' }}
+              data-cy="email_input"
+            />
+
+            <LabelInput
+              label="Wachtwoord"
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              validationRules={{ required: 'Wachtwoord is verplicht' }}
+              data-cy="password_input"
+            />
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full disabled:opacity-50"
+              data-cy="submit_btn"
+            >
+              {loading ? 'Bezig...' : 'Inloggen'}
+            </button>
+
+            <div className="text-center">
+              <button type="button" onClick={() => reset()} className="text-white/40 hover:text-white text-sm">
+                Formulier wissen
               </button>
             </div>
-          </div>
-        </form>
+          </form>
+        </FormProvider>
+
+        <div className="mt-8 pt-6 border-t border-white/10 text-center">
+          <p className="text-white/60">
+            Nog geen account?{' '}
+            <Link to="/register" className="text-[#FF6B35] hover:underline font-medium">
+              Registreer hier
+            </Link>
+          </p>
+        </div>
       </div>
-    </FormProvider>
+    </div>
   );
 }

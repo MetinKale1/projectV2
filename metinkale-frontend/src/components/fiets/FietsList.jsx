@@ -1,150 +1,62 @@
-// import { useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import * as fietsApi from '../../api/fietsen';
-// import Fiets from './Fiets';
-
-// const FietsList = () => {
-//   const [fietsen, setFietsen] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const fetchFietsen = async () => {
-//       try {
-//         const fietsenData = await fietsApi.getAll();
-//         setFietsen(fietsenData);
-//       } catch (err) {
-//         setError('Failed to load fietsen');
-//         console.error(err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchFietsen();
-//   }, []);
-
-//   const navigateToAddFiets = () => {
-//     navigate('/addFiets');
-//   };
-
-//   if (loading) {
-//     return <div>Loading...</div>;
-//   }
-
-//   if (error) {
-//     return <div>{error}</div>;
-//   }
-
-//   return (
-//     <div className='grid mt-3'>
-//       <h2 className="mb-4">Fietsen</h2>
-//       <button className="btn btn-primary mb-4" onClick={navigateToAddFiets}>
-//         Add Fiets
-//       </button>
-//       <div className='row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4 g-3'>
-//         {fietsen
-//           .sort((a, b) => a.model.toUpperCase().localeCompare(b.model.toUpperCase()))
-//           .map((fiets) => (
-//             <div className='col' key={fiets.fietsID}>
-//               <Fiets {...fiets} />
-//             </div>
-//           ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FietsList;
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/auth';
 import * as fietsApi from '../../api/fietsen';
 import Fiets from './Fiets';
-import { useTheme } from '../../contexts/theme';
-import './FietsList.css';
 
-const FietsList = () => {
-  const { theme } = useTheme();
+export default function FietsList() {
   const [fietsen, setFietsen] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+
   useEffect(() => {
     const fetchFietsen = async () => {
       try {
-        const fietsenData = await fietsApi.getAll();
-        setFietsen(fietsenData);
+        const data = await fietsApi.getAll();
+        setFietsen(data);
       } catch (err) {
-        setError('Failed to load fietsen');
-        console.error(err);
+        setError('Kon fietsen niet laden');
       } finally {
         setLoading(false);
       }
     };
-
     fetchFietsen();
   }, []);
 
-  const navigateToAddFiets = () => {
-    navigate('/fietsen/addFiets');
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (loading) return <div className="text-center py-12 text-white/60">Laden...</div>;
+  if (error) return <div className="text-center py-12 text-red-400">{error}</div>;
 
   return (
-    <div className={`fiets-list-container mt-3 theme-${theme}`} data-cy="fiets_list">
-      <h2 className="mb-4 text-center">Fietsen</h2>
-      {user?.roles?.includes('admin') && (
-        <div className="mb-4 d-flex align-items-center gap-2">
-          <button className="btn btn-primary" onClick={navigateToAddFiets} data-cy="add_fiets_btn">
-            Add Fiets
-          </button>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (e.target.fietsID.value) {
-                navigate(`/fietsen/update/${e.target.fietsID.value}`);
-              }
-            }}
-            className="d-flex align-items-center gap-2"
-            style={{marginLeft: '10px'}}
-          >
-            <input
-              type="number"
-              name="fietsID"
-              placeholder="Fiets ID"
-              min="1"
-              className="form-control"
-              style={{width: '120px'}}
-              required
-            />
-            <button type="submit" className="btn btn-warning" data-cy="update-fiets-direct">
-              Fiets aanpassen
-            </button>
-          </form>
+    <div className="py-8" data-cy="fiets_list">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="font-display text-3xl font-bold gradient-text">Onze Fietsen</h1>
+          <p className="text-white/60 mt-1">Kies jouw perfecte fiets</p>
         </div>
-      )}
-      <div className={`fiets-list-grid theme-${theme}`}> 
+        
+        {user?.roles?.includes('admin') && (
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => navigate('/fietsen/addFiets')} className="btn-primary text-sm" data-cy="add_fiets_btn">
+              + Fiets Toevoegen
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {fietsen
-          .filter((fiets) => fiets.status?.toLowerCase() !== 'inactive')
-          .sort((a, b) => a.model.toUpperCase().localeCompare(b.model.toUpperCase()))
+          .filter((f) => f.status?.toLowerCase() !== 'inactive')
+          .sort((a, b) => a.model.localeCompare(b.model))
           .map((fiets) => (
-            <div className={`fiets-item theme-${theme}`} key={fiets.fietsID} data-cy="fiets_card">
-              <Fiets {...fiets} theme={theme} />
-            </div>
+            <Fiets key={fiets.fietsID} {...fiets} />
           ))}
       </div>
+
+      {fietsen.length === 0 && (
+        <div className="text-center py-12 text-white/40">Geen fietsen beschikbaar</div>
+      )}
     </div>
   );
-};
-
-export default FietsList;
+}
