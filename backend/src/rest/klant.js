@@ -11,6 +11,7 @@ const Role = require('../core/roles');
 const checkKlantId = (ctx, next) => {
   const { klantId, roles } = ctx.state.session;
   const { id } = ctx.params;
+  const requestedId = Number(id);
 
   // You can only get our own data unless you're an admin
   if (id !== klantId && !roles.includes(Role.ADMIN)) {
@@ -84,7 +85,7 @@ updateKlantById.validationScheme = {
     voornaam: Joi.string().max(255),
     achternaam: Joi.string().max(255),
     emailadres: Joi.string().max(255),
-    profielfoto: Joi.string().max(255).allow(null),
+    profielfoto: Joi.string().max(10000000).allow(null),
   },
 };
 

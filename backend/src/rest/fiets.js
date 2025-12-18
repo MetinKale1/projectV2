@@ -21,7 +21,7 @@ register.validationScheme = {
     model: Joi.string().max(255),
     type: Joi.string().max(255),
     status: Joi.string().max(255),
-    foto: Joi.string().max(255)
+    foto: Joi.string().max(10000000).allow(null),
   },
 };
 
@@ -50,7 +50,7 @@ updateFietsById.validationScheme = {
     model: Joi.string().max(255),
     type: Joi.string().max(255),
     status: Joi.string().max(255),
-    foto: Joi.string().max(255)
+    foto: Joi.string().max(10000000).allow(null),
   },
 };
 

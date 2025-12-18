@@ -44,7 +44,7 @@ const create = async ({locatieID,model,type,status,foto}) => {
       model,
       type,
       status,
-      foto
+      foto: foto || ''
     });
     return fietsID;
   } catch (error) {

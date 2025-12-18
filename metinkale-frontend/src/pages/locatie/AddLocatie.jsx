@@ -4,11 +4,23 @@ import { useAuth } from '../../contexts/auth';
 import * as locatieApi from '../../api/locaties';
 
 export default function AddLocatie() {
-  const { user } = useAuth();
+  const { user, ready } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ straat: '', nr: '', gemeente: '', postcode: '' });
 
-  if (!user?.roles?.includes('admin')) return <Navigate to="/forbidden" replace />;
+  // Wacht tot user data geladen is
+  if (!ready) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-white/60">Laden...</div>
+      </div>
+    );
+  }
+
+  // Check admin na laden
+  if (!user?.roles?.includes('admin')) {
+    return <Navigate to="/forbidden" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

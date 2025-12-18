@@ -71,17 +71,22 @@ const create = async ({ voornaam,achternaam,passwordHash,emailadres,roles}) => {
  * @param {string} klant.achternaam 
  * @param {string} klant.wachtwoord 
  * @param {string} klant.emailadres 
+ * @param {string} [klant.profielfoto] - NIEUW: Base64 profielfoto
  */
 const updateById = async (id, { voornaam, achternaam, wachtwoord, emailadres, profielfoto }) => {
   try {
+    // ✅ FIX: Build update object - only include defined fields
+    // Dit voorkomt errors bij undefined values
+    const updateData = {};
+    
+    if (voornaam !== undefined) updateData.voornaam = voornaam;
+    if (achternaam !== undefined) updateData.achternaam = achternaam;
+    if (wachtwoord !== undefined) updateData.wachtwoord = wachtwoord;
+    if (emailadres !== undefined) updateData.emailadres = emailadres;
+    if (profielfoto !== undefined) updateData.profielfoto = profielfoto; // ✅ NIEUW
+
     await getKnex()(tables.klant)
-      .update({
-        voornaam,
-        achternaam,
-        wachtwoord,
-        emailadres,
-        profielfoto,
-      })
+      .update(updateData) // ✅ Gebruik updateData in plaats van direct object
       .where('klantID', id);
     return id;
   } catch (error) {

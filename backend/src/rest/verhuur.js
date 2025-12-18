@@ -1,5 +1,6 @@
 const Router = require('@koa/router');
 const verhuurService = require('../service/verhuur');
+const { requireAuthentication } = require('../core/auth');
 
 const getAlleVerhuur = async (ctx) => {
   const verhuur = await verhuurService.getAll();
@@ -44,6 +45,7 @@ module.exports = (app) => {
   const router = new Router({
     prefix: '/verhuur',
   });
+  router.use(requireAuthentication);
 
   router.get('/', getAlleVerhuur);
   router.get('/klant/:klantID', getVerhuurByKlantId);

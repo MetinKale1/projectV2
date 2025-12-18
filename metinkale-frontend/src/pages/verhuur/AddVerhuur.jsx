@@ -4,11 +4,23 @@ import { useAuth } from '../../contexts/auth';
 import * as verhuurApi from '../../api/verhuur';
 
 export default function AddVerhuur() {
-  const { user } = useAuth();
+  const { user, ready } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ klantID: '', fietsID: '', uitleendatum: '', inleverdatum: '' });
 
-  if (!user?.roles?.includes('admin')) return <Navigate to="/forbidden" replace />;
+  // Wacht tot user data geladen is
+  if (!ready) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-white/60">Laden...</div>
+      </div>
+    );
+  }
+
+  // Check admin na laden
+  if (!user?.roles?.includes('admin')) {
+    return <Navigate to="/forbidden" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

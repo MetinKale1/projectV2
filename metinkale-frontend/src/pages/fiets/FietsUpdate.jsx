@@ -5,7 +5,7 @@ import * as fietsApi from '../../api/fietsen';
 
 export default function FietsUpdate() {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user, ready } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ model: '', type: '', status: '', locatieID: '', foto: '' });
   const [loading, setLoading] = useState(true);
@@ -17,8 +17,15 @@ export default function FietsUpdate() {
     });
   }, [id]);
 
-  if (!user?.roles?.includes('admin')) return <Navigate to="/forbidden" replace />;
-  if (loading) return <div className="text-center py-12 text-white/60">Laden...</div>;
+  // Wacht tot user data geladen is
+  if (!ready || loading) {
+    return <div className="text-center py-12 text-white/60">Laden...</div>;
+  }
+
+  // Check admin na laden
+  if (!user?.roles?.includes('admin')) {
+    return <Navigate to="/forbidden" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,10 +59,10 @@ export default function FietsUpdate() {
 
         <div>
           <label className="block text-white/80 text-sm font-medium mb-2">Status</label>
-          <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="input-field">
-            <option value="Active">Active</option>
+          <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="input-field" required>
+            <option value="beschikbaar">Beschikbaar</option>
             <option value="verhuurd">Verhuurd</option>
-            <option value="Inactive">Inactive</option>
+            <option value="onderhoud">Onderhoud</option>
           </select>
         </div>
 
@@ -66,7 +73,7 @@ export default function FietsUpdate() {
 
         <div>
           <label className="block text-white/80 text-sm font-medium mb-2">Foto URL</label>
-          <input type="url" value={form.foto || ''} onChange={(e) => setForm({ ...form, foto: e.target.value })} className="input-field" />
+          <input type="url" value={form.foto} onChange={(e) => setForm({ ...form, foto: e.target.value })} className="input-field" />
         </div>
 
         <div className="flex gap-4">

@@ -38,7 +38,26 @@ export default function FietsDetail() {
     active: 'bg-green-500/20 text-green-400',
     beschikbaar: 'bg-green-500/20 text-green-400',
     verhuurd: 'bg-yellow-500/20 text-yellow-400',
+    inactive: 'bg-red-500/20 text-red-400',
   };
+
+  // Check of fiets beschikbaar is om te huren
+  const isAvailableToRent = fiets.status?.toLowerCase() === 'beschikbaar' || 
+                            fiets.status?.toLowerCase() === 'active';
+  const isRented = fiets.status?.toLowerCase() === 'verhuurd';
+  const isInactive = fiets.status?.toLowerCase() === 'inactive';
+
+  // Bepaal knop tekst en disabled state
+  let buttonText = 'Huur Deze Fiets';
+  let buttonDisabled = false;
+
+  if (isInactive) {
+    buttonText = 'Niet Beschikbaar (Inactive)';
+    buttonDisabled = true;
+  } else if (isRented) {
+    buttonText = 'Niet Beschikbaar (Verhuurd)';
+    buttonDisabled = true;
+  }
 
   return (
     <div className="py-8" data-cy="fiets_detail">
@@ -78,7 +97,8 @@ export default function FietsDetail() {
             </div>
           </div>
 
-          {fiets.status === 'verhuurd' && verhuurInfo && (
+          {/* Waarschuwing voor verhuurd */}
+          {isRented && verhuurInfo && (
             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
               <p className="text-yellow-400">
                 Verhuurd tot <strong>{verhuurInfo.inleverdatum}</strong>
@@ -86,13 +106,23 @@ export default function FietsDetail() {
             </div>
           )}
 
+          {/* Waarschuwing voor inactive */}
+          {isInactive && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
+              <p className="text-red-400">
+                Deze fiets is momenteel niet beschikbaar voor verhuur.
+              </p>
+            </div>
+          )}
+
+          {/* Huur knop */}
           <button
-            onClick={() => navigate(`/verhuur/huur/${id}`)}
-            disabled={fiets.status === 'verhuurd'}
+            onClick={() => !buttonDisabled && navigate(`/verhuur/huur/${id}`)}
+            disabled={buttonDisabled}
             className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             data-cy="edit_fiets_btn"
           >
-            {fiets.status === 'verhuurd' ? 'Niet Beschikbaar' : 'Huur Deze Fiets'}
+            {buttonText}
           </button>
         </div>
       </div>
